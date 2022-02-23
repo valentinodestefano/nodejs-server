@@ -1,5 +1,5 @@
 const store = require('./store');
-const stroe = require('./store');                   //Importamos el store
+
 
 function addMessage(user, message) {                //Función addMessage
     return new Promise((resolve, reject) =>{        //Nueva promesa

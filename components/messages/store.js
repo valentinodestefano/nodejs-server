@@ -1,15 +1,5 @@
-const db = require('mongoose');        //traemos la BDD (mongoose)
+
 const model = require('./model');
-
-const url =
-  'mongodb://valendesdel:Valentina_25@cluster0-shard-00-00.hqhas.mongodb.net:27017,cluster0-shard-00-01.hqhas.mongodb.net:27017,cluster0-shard-00-02.hqhas.mongodb.net:27017/telegrom?ssl=true&replicaSet=atlas-12pysj-shard-0&authSource=admin&retryWrites=true&w=majority';
-
-db.Promise = global.Promise;
-
-db.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('[db] Conectada con éxito'))
-  .catch(err => console.error('[db]', err));
-
 
 
 function addMessage(message) {
