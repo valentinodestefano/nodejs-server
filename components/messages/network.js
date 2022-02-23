@@ -12,7 +12,8 @@ const response = require('../../network/response');                    //IMPORTA
 
 //GET
 router.get('/get', function(req, res){
-    controller.getMessage().then((messageList) => {                                  //Con esto accedemos a la función del controller "addMessage"
+    const filterUser = req.query.user || null;                                       //Acá chequeamos si se está enviando parametros de la Query para filtrar y si no es así se deja null          
+    controller.getMessage(filterUser).then((messageList) => {                        //Con esto accedemos a la función del controller "addMessage" y se envía el usuario a filtrar si es el caso
         response.success(req, res, messageList, 201);                                //Esto nos responderá exitosamente
     }).catch(e => {
         response.error(req, res, 'Unexpected Error', 400, 'error');                  //Esto nos responderá si hubo un error al introducir los datos
@@ -27,6 +28,24 @@ router.post('/post', function(req, res){
     }).catch(e => {
         response.error(req, res, 'Información invalida', 400, 'error');              //Esto nos responderá si hubo un error al introducir los datos
     });
+})
+
+//PATCH
+router.patch('/editById', function (req, res){                              
+    controller.updateMessage(req.body.id, req.body.message).then((data) => {      //enviamos el id y el message que tenemos del body al controller
+        response.success(req, res, data, 200);
+    }).catch(e => {
+        response.error(req, res, 'Error Interno', 500, e);
+    });
+})
+
+//DELETE
+router.delete('/deleteMessage', function (req, res) {
+    controller.deleteMessage(req.body.id).then(() =>{                   //en vez de pedirlo por parametro de query lo pedimos por body el id del message que se desea eliminar y lo enviamos al controller
+        response.success(req, res, `Usuario ${req.body.id} eliminado`, 200);    
+    }).catch(e => {
+        response.error(req, res, 'Error interno', 500, e);
+    })
 })
 
 module.exports = router;       //Exportamos el archivo
