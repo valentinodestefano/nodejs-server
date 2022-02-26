@@ -1,6 +1,7 @@
 const express = require('express');                                    //Import express
 const router = express.Router();                                       //ESTO SE USA PARA DIFERENCIAR ENTRE METODOS DE PETICIONES (GET, POST, PUT... etc)
-const bodyParser = require('body-parser');
+const multer = require('multer');
+const path = require('path');
 const controller = require('./controller');                            //Importamos el controller
 
 const response = require('../../network/response');                    //IMPORTAMOS LOS RESPONSE QUE CREAMOS
@@ -9,6 +10,19 @@ const response = require('../../network/response');                    //IMPORTA
     //console.log(req.query);                                          //ACCEDEMOS A LOS PARAMETROS POR QUERY
     //console.log(req.body);                                           //El req.body sería el body que enviamos en la petición
 
+
+    let storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+          cb(null, 'uploads/')
+        },
+        filename: function (req, file, cb) {
+          cb(null, Date.now() + path.extname(file.originalname)) //Appending extension
+        }
+      })
+    
+    const upload = multer({
+        storage: storage
+    });                           //instancia del Multer para subir archivos
 
 //GET
 router.get('/get', function(req, res){
@@ -21,9 +35,9 @@ router.get('/get', function(req, res){
 })
 
 //POST
-router.post('/post', function(req, res){
+router.post('/post', upload.single('file'), function(req, res){
 
-    controller.addMessage(req.body.user, req.body.message).then((fullMessage) => {   //Con esto accedemos a la función del controller "addMessage"
+    controller.addMessage(req.body.chat, req.body.user, req.body.message, req.file).then((fullMessage) => {   //Con esto accedemos a la función del controller "addMessage"
         response.success(req, res, fullMessage, 201);                                //Esto nos responderá exitosamente
     }).catch(e => {
         response.error(req, res, 'Información invalida', 400, 'error');              //Esto nos responderá si hubo un error al introducir los datos

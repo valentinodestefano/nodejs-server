@@ -8,14 +8,23 @@ function addMessage(message) {
 }
 
 async function getMessages(filterUser) {
+  return new Promise((resolve, reject) =>{
     let filter = {};
     if (filterUser !== null){
       filter = {                                                 //Con esto mongodb entiende que me debe traer los usuarios que sean iguales a filterUser
         user: new RegExp(filterUser, "i")                        //Mongo puede utilizar Regular Expressions para realizar búsquedas y en estas es posible indicarle que busque “case-insensitive”. Esto se logra con el flag “i” que vemos en el código.
       };    
     }
-    const messages = await model.find(filter);                   //En el model llamamos al metodo .find()
-    return messages;
+    const messages = model.find(filter)                         //En el model llamamos al metodo .find()
+    .populate('user').exec((error, populated) => {            
+      if (error) {
+        reject(error);
+        return false;
+      }
+      resolve(populated);
+    });     
+  })
+    
 }
 
 async function updateText(id, message){
